@@ -317,3 +317,34 @@ body::after {
   .r-back p { font-size: 1.15rem; }
   .hero-sub { letter-spacing: .15em; font-size: .7rem; }
 }
+
+/* ============ PHONE LAYOUT ============ */
+@media (max-width: 700px) {
+  /* journey: title top-left, big arc, one card in the middle, story text below */
+  .journey-title { top: 10%; left: 6%; font-size: .8rem; }
+  .arc { left: 0; transform: none; width: 180vw; top: 14%; }
+  .jcards { top: 46%; }
+  .journey-info { display: block; left: 6%; right: 6%; top: auto; bottom: 12%; max-width: none; text-align: center; }
+  .journey-info b { font-size: 2.2rem; }
+  .jcard b { font-size: 1.4rem; }
+  .floor-rings { display: none; }
+
+  /* memories: keep only the label */
+  .moments-menu { display: none; }
+
+  /* together: 2 × 2 counter */
+  .together { padding: 5rem 1rem; }
+  .count-grid { gap: 1.6rem .5rem; }
+  .count-grid div { min-width: 44%; }
+
+  /* poster: names on top, photo below */
+  .poster-bg { background: linear-gradient(165deg, #efe4d2 0 52%, #d8231a 52% 100%); }
+  .poster-text { top: 11%; left: 7%; right: 7%; transform: none; }
+  .poster-text h3 { font-size: 3rem; }
+  .poster-text p { letter-spacing: .15em; font-size: .75rem; }
+  .poster img { left: 0; right: 0; margin: 0 auto; width: 84%; max-width: 84%; height: 46%; bottom: 5%; opacity: 1; border-radius: 12px; }
+  .finale-contact { display: none; }
+
+  /* promise buttons wrap nicely */
+  .promise button { padding: 1rem 2rem; font-size: .8rem; }
+}

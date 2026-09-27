@@ -112,6 +112,17 @@ $("#tiles").innerHTML = CONFIG.tiles.map((t, i) => `
     ${t.photo ? `<img src="${t.photo}" alt="" data-full="${t.photo}">` : `${ICONS[t.icon]}<span>${t.label}</span>`}
   </div>`).join("");
 
+// on phones, tiles sit in two columns at the edges so they never cover the couple or run off-screen
+const MOBILE_TILE_POS = [[4, 25], [76, 25], [4, 41], [76, 41], [4, 57], [76, 57], [4, 73], [76, 73], [22, 87], [58, 87]];
+function placeTiles() {
+  const mobile = window.innerWidth < 700;
+  $$(".tile").forEach((t, i) => {
+    const [x, y] = mobile ? MOBILE_TILE_POS[i % MOBILE_TILE_POS.length] : [CONFIG.tiles[i].x, CONFIG.tiles[i].y];
+    t.style.left = x + "%"; t.style.top = y + "%";
+  });
+}
+placeTiles(); window.addEventListener("resize", placeTiles);
+
 $("#journeyMenu").innerHTML = CONFIG.journey.map((j) => `<li>${j.year} · ${j.title}</li>`).join("");
 $("#jcards").innerHTML = CONFIG.journey.map((j) => `
   <article class="jcard" data-full="${j.img}" data-cap="${j.year} · ${j.title}"><img src="${j.img}" alt=""><div><b>${j.year}</b><span>${j.title}</span></div></article>`).join("");
@@ -185,7 +196,7 @@ const trailPts = [], embers = [], TAIL = 260, STRANDS = [
 let tt = 0;
 function trailPos(t) {
   // tilted orbit ring around the couple (like the video): far half passes behind, near half in front
-  const cx = TW * 0.5, cy = TH * 0.62, rx = Math.min(TW * 0.34, 560), ry = TH * 0.12, tilt = -0.13;
+  const cx = TW * 0.5, cy = TH * 0.62, rx = TW < 700 ? TW * 0.42 : Math.min(TW * 0.34, 560), ry = TH * 0.12, tilt = -0.13;
   const ex = rx * Math.cos(t) * (1 + 0.05 * Math.sin(3 * t));
   const ey = ry * Math.sin(t) + ry * 0.22 * Math.sin(2 * t + 0.6);
   return { x: cx + ex * Math.cos(tilt) - ey * Math.sin(tilt), y: cy + ex * Math.sin(tilt) + ey * Math.cos(tilt), z: Math.sin(t) };
@@ -282,7 +293,20 @@ $("#years").innerHTML = CONFIG.journey.map((j, i) => {
   return `<g class="yr" opacity="0"><circle class="yr-dot" cx="${p.x}" cy="${p.y}" r="5"/><text x="${p.x - 30}" y="${p.y - 18}">${j.year}</text></g>`;
 }).join("");
 
-function layoutJourney() {
+function layoutJourney(animate) {
+  if (window.innerWidth < 700) {
+    // phone: carousel — the active year's card is big in the middle, neighbours peek from the sides
+    const cw = Math.min(220, window.innerWidth * 0.5), a = Math.max(0, activeYear);
+    $("#jcards").style.setProperty("--cw", cw + "px");
+    $$(".jcard").forEach((c, i) => {
+      const t = i - a;
+      gsap[animate ? "to" : "set"](c, { x: t * cw * 0.95 - cw / 2, y: 0, z: -Math.abs(t) * 170, rotationY: -t * 28, opacity: Math.abs(t) > 1 ? 0 : Math.abs(t) ? 0.45 : 1, duration: 0.6, ease: "power3.out" });
+    });
+    const arc = $(".arc"), scale = arc.getBoundingClientRect().width / 1200, p = yearPts[a];
+    gsap[animate ? "to" : "set"](arc, { xPercent: 0, x: window.innerWidth / 2 - p.x * scale, duration: 0.6, ease: "power3.out" });
+    return;
+  }
+  gsap.set(".arc", { xPercent: -50, x: 0 }); // desktop: arc centred
   // fit every card (first year to last) inside the screen
   const gap = 18, avail = Math.min(window.innerWidth * 0.9, 1320);
   const cw = Math.min(210, (avail - gap * (N - 1)) / N);
@@ -292,7 +316,7 @@ function layoutJourney() {
     gsap.set(c, { x: t * (cw + gap) - cw / 2, y: Math.abs(t) * -8, z: t * t * 8, rotationY: -t * 5, xPercent: 0 });
   });
 }
-layoutJourney(); window.addEventListener("resize", layoutJourney);
+window.addEventListener("resize", () => layoutJourney());
 
 const PIVOT = { x: 690, y: 40 }, hand = { a: Math.PI / 2, l: 0 };
 function drawHand() {
@@ -300,9 +324,11 @@ function drawHand() {
   $("#beam").setAttribute("y2", PIVOT.y + Math.sin(hand.a) * hand.l);
 }
 let activeYear = -1;
+layoutJourney();
 function setYear(i) {
   if (i === activeYear) return; activeYear = i;
   $$(".jcard").forEach((c, k) => c.classList.toggle("on", k === i));
+  if (window.innerWidth < 700) layoutJourney(true);
   $$("#journeyMenu li").forEach((c, k) => c.classList.toggle("on", k === i));
   $$(".yr").forEach((g, k) => g.querySelector("circle").setAttribute("r", k === i ? 9 : 5));
   // clock-hand beam: the centre stays fixed, only the angle and length change
@@ -551,3 +577,8 @@ secs.forEach((s, j, _, i = navIndex[j]) => ScrollTrigger.create({
 /* preview helper: open index.html?auto&y=1500 to skip the gate and jump to a scroll position */
 const qs = new URLSearchParams(location.search);
 if (qs.has("auto")) setTimeout(() => { $("#enterBtn").click(); setTimeout(() => window.scrollTo(0, +qs.get("y") || 0), 1500); }, 1800);
+
+/* re-apply phone/desktop layouts once the real viewport width is known */
+const relayout = () => { placeTiles(); layoutJourney(); ScrollTrigger.refresh(); };
+document.addEventListener("DOMContentLoaded", relayout);
+window.addEventListener("load", relayout);
