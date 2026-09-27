@@ -1,4 +1,4 @@
-# Pagala ♥ Pandulu — Our Love Story
+# Pagala ♥ Pandulu
 
 A cinematic love-story website (HTML, CSS, JavaScript + GSAP). No build step: open `index.html` or visit the GitHub Pages link.
 
