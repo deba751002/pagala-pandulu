@@ -18,9 +18,8 @@ section { position: relative; }
 
 /* film grain */
 body::after {
-  content: ""; position: fixed; inset: -50%; z-index: 95; pointer-events: none; opacity: .07;
+  content: ""; position: fixed; inset: 0; z-index: 95; pointer-events: none; opacity: .07;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain .8s steps(3) infinite;
 }
 @keyframes grain { 33% { transform: translate(-2%, 3%); } 66% { transform: translate(3%, -2%); } }
 
@@ -141,7 +140,7 @@ body::after {
 .tile svg { width: 42%; height: 42%; }
 .tile.photo { padding: 0; overflow: hidden; }
 .tile.photo img { width: 100%; height: 100%; object-fit: cover; filter: sepia(.35) contrast(1.1); }
-.uni-side { position: absolute; right: 5%; bottom: 18%; z-index: 4; font-size: .55rem; letter-spacing: .35em; line-height: 1.9; color: var(--muted); text-align: right; }
+.uni-side { position: absolute; right: 5%; bottom: 6%; z-index: 4; font-size: .55rem; letter-spacing: .35em; line-height: 1.9; color: var(--muted); text-align: right; }
 @media (max-width: 700px) { .tile { --s: 70px !important; font-size: .55rem; } .uni-side { display: none; } }
 
 /* ============ 3. JOURNEY ============ */
@@ -205,7 +204,7 @@ body::after {
   radial-gradient(ellipse 45% 55% at 70% 40%, rgba(170,20,10,.85), transparent 70%),
   radial-gradient(ellipse 60% 40% at 50% 90%, rgba(255,90,30,.6), transparent 70%); filter: blur(30px); }
 .finale-name { position: relative; z-index: 1; font-family: var(--display); font-weight: 400; font-size: 26vw; line-height: .8; letter-spacing: -.01em;
-  background: linear-gradient(180deg, #f0d2bd 0%, #d99477 40%, #b3321f 100%); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0; transform: scale(1.4); filter: blur(12px); }
+  background: linear-gradient(180deg, #f0d2bd 0%, #d99477 40%, #b3321f 100%); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0; transform: scale(1.4); }
 .finale-name::after { content: ""; }
 .finale-couple { position: absolute; z-index: 2; bottom: 0; left: 50%; height: 80vh; width: auto; max-width: 55vw; object-fit: cover; opacity: 0;
   -webkit-mask-image: radial-gradient(ellipse 50% 60% at 50% 50%, #000 50%, transparent 100%); mask-image: radial-gradient(ellipse 50% 60% at 50% 50%, #000 50%, transparent 100%);
@@ -245,7 +244,7 @@ body::after {
 
 /* heartbeat line */
 .ecg { display: block; width: min(340px, 70vw); height: auto; overflow: visible; }
-.ecg path { fill: none; stroke: var(--red); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 6px rgba(255,60,40,.8));
+.ecg path { fill: none; stroke: var(--red); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
   stroke-dasharray: var(--len, 900); stroke-dashoffset: var(--len, 900); animation: ecg 3s linear infinite; }
 @keyframes ecg { 0% { stroke-dashoffset: var(--len, 900); } 55% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: calc(var(--len, 900) * -1); } }
 .ecg path.base { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; opacity: .22; filter: none; }
@@ -348,3 +347,8 @@ body::after {
   /* promise buttons wrap nicely */
   .promise button { padding: 1rem 2rem; font-size: .8rem; }
 }
+
+/* ============ PERFORMANCE ============ */
+/* scroll-animated layers get their own GPU layer so scrolling does not repaint them */
+.hero-left, #heroFrame, #tiles, .smoke, .finale-name, .finale-couple, .poster, .cyl, .journey-pin .jcards { will-change: transform, opacity; }
+@media (max-width: 700px) { body::after { display: none; } } /* film grain off on phones */

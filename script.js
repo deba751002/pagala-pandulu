@@ -85,6 +85,10 @@ const ICONS = {
 };
 
 gsap.registerPlugin(ScrollTrigger);
+// phones: the address bar showing/hiding must not recalculate every scroll animation (causes jumps)
+ScrollTrigger.config({ ignoreMobileResize: true });
+const IS_PHONE = window.innerWidth < 700 || matchMedia("(pointer: coarse)").matches;
+const SD = Math.min(devicePixelRatio, IS_PHONE ? 1.5 : 2); // capped canvas pixel ratio
 
 /* draws a small heart centred on (x, y), s = size in px */
 function drawHeart(c, x, y, s, color) {
@@ -183,7 +187,7 @@ gsap.timeline({ scrollTrigger: { trigger: ".hero", start: "top top", end: "botto
    around the couple — drawn behind them on the far side of the loop, in front on the near side */
 const tBack = $("#trailBack"), tFront = $("#trailFront");
 const cB = tBack.getContext("2d"), cF = tFront.getContext("2d");
-let TW = 0, TH = 0, DPR = Math.min(devicePixelRatio, 2);
+let TW = 0, TH = 0, DPR = SD;
 function sizeTrail() {
   TW = tBack.offsetWidth; TH = tBack.offsetHeight;
   [tBack, tFront].forEach((c) => { c.width = TW * DPR; c.height = TH * DPR; c.getContext("2d").setTransform(DPR, 0, 0, DPR, 0, 0); });
@@ -212,20 +216,27 @@ function drawTrail() {
 
   [cB, cF].forEach((c) => { c.globalCompositeOperation = "source-over"; c.clearRect(0, 0, TW, TH); c.globalCompositeOperation = "lighter"; c.lineCap = "round"; });
 
-  STRANDS.forEach((st) => {
-    for (let i = 1; i < trailPts.length; i++) {
-      const a = trailPts[i - 1], b = trailPts[i], age = i / trailPts.length, fade = Math.pow(1 - age, 1.1);
-      const ctx = b.z > 0 ? cF : cB;
-      // offset each strand perpendicular to the path, drifting so strands cross and separate
-      const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
-      const o1 = st.off * Math.sin(tt * 2 + i * 0.09 + st.ph) * (0.3 + age), o0 = st.off * Math.sin(tt * 2 + (i - 1) * 0.09 + st.ph) * (0.3 + age);
-      const ax = a.x + nx * o0, ay = a.y + ny * o0, bx = b.x + nx * o1, by = b.y + ny * o1;
-      const w = st.w * (1 - age * 0.6);
-      const seg = (width, color) => { ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke(); };
-      seg(40 * w, `rgba(255,40,0,${0.07 * fade})`);   // wide red haze
-      seg(16 * w, `rgba(255,75,10,${0.26 * fade})`);  // orange glow
-      seg(6 * w, `rgba(255,120,35,${0.65 * fade})`);  // hot rim
-      seg(2.2 * w, `rgba(255,205,150,${0.95 * fade})`); // white core
+  // each strand is drawn in chunks of points (one path per chunk, 4 glow layers) — ~8x fewer strokes
+  const CH = 8, n = trailPts.length;
+  STRANDS.slice(0, IS_PHONE ? 2 : 4).forEach((st) => {
+    for (let k = 0; k < n - 1; k += CH) {
+      const e = Math.min(k + CH, n - 1), mid = trailPts[(k + e) >> 1];
+      const age = (k + e) / 2 / n, fade = Math.pow(1 - age, 1.1), w = st.w * (1 - age * 0.6);
+      const ctx = mid.z > 0 ? cF : cB;
+      ctx.beginPath();
+      for (let i = k; i <= e; i++) {
+        // offset the strand perpendicular to the path so strands cross and separate
+        const a = trailPts[Math.max(0, i - 1)], b = trailPts[Math.min(n - 1, i + 1)], p = trailPts[i];
+        const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1;
+        const o = st.off * Math.sin(tt * 2 + i * 0.09 + st.ph) * (0.3 + i / n);
+        const x = p.x - (dy / len) * o, y = p.y + (dx / len) * o;
+        if (i === k) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      const layer = (width, color) => { ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke(); };
+      layer(40 * w, `rgba(255,40,0,${0.07 * fade})`);    // wide red haze
+      layer(16 * w, `rgba(255,75,10,${0.26 * fade})`);   // orange glow
+      layer(6 * w, `rgba(255,120,35,${0.65 * fade})`);   // hot rim
+      layer(2.2 * w, `rgba(255,205,150,${0.95 * fade})`); // warm core
     }
   });
 
@@ -243,12 +254,15 @@ function drawTrail() {
     ctx.beginPath(); ctx.arc(e.x, e.y, e.r, 0, 6.283); ctx.fill();
   }
 }
-let trailOn = false;
-ScrollTrigger.create({ trigger: "#universe", start: "top bottom", end: "bottom top", onToggle: (st) => (trailOn = st.isActive) });
+let trailOn = false, tileTweens = [];
+ScrollTrigger.create({ trigger: "#universe", start: "top bottom", end: "bottom top", onToggle: (st) => {
+  trailOn = st.isActive;
+  tileTweens.forEach((t) => (st.isActive ? t.play() : t.pause()));
+} });
 (function trailLoop() { if (trailOn) drawTrail(); requestAnimationFrame(trailLoop); })();
 
 $$(".tile").forEach((t, i) => {
-  gsap.to(t, { y: "+=" + (10 + (i % 3) * 8), rotation: (i % 2 ? 4 : -4), duration: 2.4 + (i % 4) * 0.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  tileTweens[i] = gsap.to(t, { paused: !trailOn, y: "+=" + (10 + (i % 3) * 8), rotation: (i % 2 ? 4 : -4), duration: 2.4 + (i % 4) * 0.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
 });
 const uni = $("#universe");
 uni.addEventListener("mousemove", (e) => {
@@ -263,24 +277,28 @@ gsap.from(".tile", { opacity: 0, scale: 0.4, z: -400, stagger: 0.07, duration: 1
 gsap.from(".uni-head > *", { opacity: 0, y: 30, stagger: 0.15, duration: 1, scrollTrigger: { trigger: uni, start: "top 60%" } });
 gsap.fromTo("#tiles", { yPercent: 10 }, { yPercent: -10, ease: "none", scrollTrigger: { trigger: uni, start: "top bottom", end: "bottom top", scrub: true } });
 
-// sparks / embers
+// sparks / embers — a glow sprite is drawn once and stamped, instead of a new gradient per particle
 const cv = $("#sparks"), ctx = cv.getContext("2d");
+const glow = document.createElement("canvas"); glow.width = glow.height = 64;
+{ const g = glow.getContext("2d"), rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  rg.addColorStop(0, "rgba(255,200,120,1)"); rg.addColorStop(1, "rgba(255,90,20,0)"); g.fillStyle = rg; g.fillRect(0, 0, 64, 64); }
 let sparks = [];
-function sizeCv() { cv.width = cv.offsetWidth * devicePixelRatio; cv.height = cv.offsetHeight * devicePixelRatio; }
+const MAX_SPARKS = IS_PHONE ? 60 : 100;
+function sizeCv() { cv.width = cv.offsetWidth * SD; cv.height = cv.offsetHeight * SD; }
 sizeCv(); window.addEventListener("resize", sizeCv);
 (function loop() {
+  requestAnimationFrame(loop);
+  if (!trailOn) return;
   ctx.clearRect(0, 0, cv.width, cv.height);
-  if (sparks.length < 140) sparks.push({ x: Math.random() * cv.width, y: cv.height * (0.4 + Math.random() * 0.6), r: Math.random() * 2.2 + 0.4, vx: (Math.random() - 0.5) * 0.4, vy: -Math.random() * 0.8 - 0.2, life: 1, heart: Math.random() < 0.3 });
+  if (sparks.length < MAX_SPARKS) sparks.push({ x: Math.random() * cv.width, y: cv.height * (0.4 + Math.random() * 0.6), r: Math.random() * 2.2 + 0.4, vx: (Math.random() - 0.5) * 0.4, vy: -Math.random() * 0.8 - 0.2, life: 1, heart: Math.random() < 0.3 });
   ctx.globalCompositeOperation = "lighter";
   sparks.forEach((p) => {
-    p.x += p.vx * devicePixelRatio; p.y += p.vy * devicePixelRatio; p.life -= 0.004;
-    if (p.heart) { drawHeart(ctx, p.x, p.y, (p.r + 3) * 2.2 * devicePixelRatio, `rgba(255,90,80,${p.life * 0.75})`); return; }
-    const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4 * devicePixelRatio);
-    g.addColorStop(0, `rgba(255,200,120,${p.life})`); g.addColorStop(1, "rgba(255,90,20,0)");
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 4 * devicePixelRatio, 0, 6.283); ctx.fill();
+    p.x += p.vx * SD; p.y += p.vy * SD; p.life -= 0.004;
+    if (p.heart) { drawHeart(ctx, p.x, p.y, (p.r + 3) * 2.2 * SD, `rgba(255,90,80,${p.life * 0.75})`); return; }
+    const d = p.r * 8 * SD;
+    ctx.globalAlpha = Math.max(0, p.life); ctx.drawImage(glow, p.x - d / 2, p.y - d / 2, d, d); ctx.globalAlpha = 1;
   });
   sparks = sparks.filter((p) => p.life > 0);
-  requestAnimationFrame(loop);
 })();
 
 /* ------------------------------ 3. JOURNEY ------------------------------ */
@@ -341,7 +359,7 @@ function setYear(i) {
 }
 gsap.timeline({
   scrollTrigger: {
-    trigger: "#journey", start: "top top", end: "+=" + N * 450, pin: ".journey-pin", scrub: 1,
+    trigger: "#journey", start: "top top", end: "+=" + N * 260, pin: ".journey-pin", scrub: 0.5,
     onUpdate: (st) => { const p = st.progress; if (p > 0.15) setYear(Math.min(N - 1, Math.floor(((p - 0.15) / 0.85) * N))); },
   },
 })
@@ -378,9 +396,11 @@ cylStage.addEventListener("pointerup", (e) => {
     if (card) openPhoto(card.dataset.full, card.dataset.cap, card.querySelector("img").src);
   }
 });
-gsap.ticker.add(() => { gsap.set("#cyl", { rotationY: cylRot + cylDrag + Math.sin(Date.now() / 3000) * 2, z: R * 0.6 }); });
+let cylOn = false;
+ScrollTrigger.create({ trigger: "#moments", start: "top bottom", end: "bottom top", onToggle: (st) => (cylOn = st.isActive) });
+gsap.ticker.add(() => { if (cylOn) gsap.set("#cyl", { rotationY: cylRot + cylDrag + Math.sin(Date.now() / 3000) * 2, z: R * 0.6 }); });
 
-gsap.timeline({ scrollTrigger: { trigger: "#moments", start: "top top", end: "+=1600", pin: ".moments-pin", scrub: 1,
+gsap.timeline({ scrollTrigger: { trigger: "#moments", start: "top top", end: "+=900", pin: ".moments-pin", scrub: 0.5,
   onUpdate: (st) => (cylRot = -25 + st.progress * 50) } })
   .from(".mcard", { opacity: 0, scale: 0.6, stagger: { each: 0.004, from: "center" }, duration: 0.3 })
   .from(".platform i", { scale: 0.2, opacity: 0, stagger: 0.05, duration: 0.3 }, 0)
@@ -388,9 +408,9 @@ gsap.timeline({ scrollTrigger: { trigger: "#moments", start: "top top", end: "+=
   .to({}, { duration: 0.7 });
 
 /* ------------------------------ 5. FINALE ------------------------------ */
-gsap.timeline({ scrollTrigger: { trigger: "#forever", start: "top top", end: "+=2200", pin: ".finale-pin", scrub: 1 } })
+gsap.timeline({ scrollTrigger: { trigger: "#forever", start: "top top", end: "+=1300", pin: ".finale-pin", scrub: 0.5 } })
   .to(".smoke", { opacity: 1, duration: 0.2 })
-  .to("#finaleName", { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.25, ease: "power2.out" }, 0.1)
+  .to("#finaleName", { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" }, 0.1)
   .to(".smoke", { opacity: 0.45, duration: 0.2 }, 0.3)
   .to("#finaleCouple", { opacity: 1, duration: 0.2 }, 0.3)
   .to("#finaleName", { scale: 0.9, duration: 0.2 }, 0.5)
@@ -418,7 +438,7 @@ $$(".jcard").forEach((c) => c.addEventListener("click", () => openPhoto(c.datase
 $$(".tile.photo img").forEach((i) => i.addEventListener("click", () => openPhoto(i.dataset.full, "", i.src)));
 
 /* ------------------------------ floating hearts ------------------------------ */
-const HDPR = Math.min(devicePixelRatio, 2);
+const HDPR = SD;
 function floatHearts(cvs, max = 28) {
   const c = cvs.getContext("2d"); let hs = [], on = false, W = 0, H = 0;
   const size = () => { W = cvs.width = cvs.offsetWidth * HDPR; H = cvs.height = cvs.offsetHeight * HDPR; };
