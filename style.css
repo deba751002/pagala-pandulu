@@ -350,5 +350,6 @@ body::after {
 
 /* ============ PERFORMANCE ============ */
 /* scroll-animated layers get their own GPU layer so scrolling does not repaint them */
-.hero-left, #heroFrame, #tiles, .smoke, .finale-name, .finale-couple, .poster, .cyl, .journey-pin .jcards { will-change: transform, opacity; }
+/* never on 3D containers (.cyl, .jcards, .tiles): will-change/opacity flattens preserve-3d */
+.hero-left, #heroFrame, .smoke, .finale-name, .finale-couple, .poster { will-change: transform, opacity; }
 @media (max-width: 700px) { body::after { display: none; } } /* film grain off on phones */
