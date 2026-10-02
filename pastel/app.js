@@ -22,11 +22,11 @@ const CONFIG = {
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const img = (id, size = "s") => `images/${size === "full" ? "" : size + "/"}p${String(id).padStart(2, "0")}.jpg`;
+const img = (id, size = "s") => `../images/${size === "full" ? "" : size + "/"}p${String(id).padStart(2, "0")}.jpg`;
 
 /* ---------- gate + music ---------- */
 $("#gatePhotos").innerHTML = [6, 49, 37].map((id) => `<img src="${img(id)}" alt="">`).join("");
-const SONGS = [{ name: "Our song", src: "music.mp3" }, { name: "Khat", src: "khat.mp3" }]; // add more songs here
+const SONGS = [{ name: "Our song", src: "../music.mp3" }, { name: "Khat", src: "../khat.mp3" }]; // add more songs here
 const audio = $("#bgm"), musicBtn = $("#musicBtn");
 let song = 0;
 function loadSong(i) { song = (i + SONGS.length) % SONGS.length; audio.src = SONGS[song].src; $("#songName").textContent = SONGS[song].name; }
