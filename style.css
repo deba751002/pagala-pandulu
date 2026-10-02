@@ -126,7 +126,7 @@ body::after {
 .uni-head h2 { font-family: var(--cine); font-weight: 400; font-size: clamp(1.6rem, 3.6vw, 3rem); letter-spacing: .12em; line-height: 1.05; margin: .5rem 0; text-shadow: 0 0 30px rgba(255,160,80,.35); }
 .uni-couple { position: absolute; z-index: 3; bottom: 0; left: 50%; height: 62vh; width: auto; max-width: 46vw; object-fit: cover;
   -webkit-mask-image: radial-gradient(ellipse 50% 60% at 50% 55%, #000 45%, transparent 100%); mask-image: radial-gradient(ellipse 50% 60% at 50% 55%, #000 45%, transparent 100%);
-  filter: brightness(.55) contrast(1.2) sepia(.4) hue-rotate(-15deg); }
+  filter: brightness(.8) contrast(1.1) sepia(.3); }
 .trail { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; mix-blend-mode: screen; }
 .trail.front { z-index: 5; }
 .tiles { position: absolute; inset: 0; z-index: 4; transform-style: preserve-3d; }
@@ -353,3 +353,19 @@ body::after {
 /* never on 3D containers (.cyl, .jcards, .tiles): will-change/opacity flattens preserve-3d */
 .hero-left, #heroFrame, .smoke, .finale-name, .finale-couple, .poster { will-change: transform, opacity; }
 @media (max-width: 700px) { body::after { display: none; } } /* film grain off on phones */
+
+/* phones: drop the effects that are expensive to repaint on every scroll frame */
+@media (max-width: 700px), (pointer: coarse) {
+  .topbar { mix-blend-mode: normal; }                 /* blend with the page = full-screen re-composite each frame */
+  .finale-contact { mix-blend-mode: normal; }
+  .smoke { filter: none; }                             /* 30px blur on an oversized layer; the gradients are soft already */
+  .hero-frame img, .hero-couple, .uni-couple, .finale-couple, .poster img, .plat-couple, .tile.photo img { filter: none; }
+  .hero-frame img { box-shadow: 0 0 40px rgba(255,90,20,.3); }
+  .hero-name { filter: none; }
+  .jcard img, .jcard.on img { transition: none; }
+  .jcard { box-shadow: 0 10px 24px rgba(0,0,0,.6); }
+  .mcard { box-shadow: none; }
+  .mcard img { filter: none; transition: none; }
+}
+@media (max-width: 700px) { .jcard div { display: none; } .jcard img { height: 100%; } .journey-info b { font-size: 1.7rem; } }
+@media (max-width: 700px), (pointer: coarse) { .tile { box-shadow: 0 8px 18px rgba(0,0,0,.55); } }

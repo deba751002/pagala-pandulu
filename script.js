@@ -8,26 +8,29 @@
    ===================================================================== */
 const U = (id, w = 1200) => `https://images.unsplash.com/photo-${id}?w=${w}&q=80`;
 
+// each photo exists in 3 sizes: images/s (cards), images/m (big frames), images/ (lightbox only)
+const SM = (p) => p.replace("images/", "images/s/"), MD = (p) => p.replace("images/", "images/m/");
+
 const CONFIG = {
   name1: "PAGALA",
   name2: "PANDULU",
   finaleWord: "FOREVER",
   cutout: false,
   couple: {
-    hero:     U("1537633552985-df8429e8048b", 1400),
-    universe: U("1494774157365-9e04c6720e47", 1200),
-    platform: U("1606216794074-735e91aa2c92", 900),
-    finale:   U("1583939003579-730e3918a45a", 1400),
-    poster:   U("1501901609772-df0848060b33", 1400),
+    hero:     "images/p49.jpg",
+    universe: "images/p66.jpg",
+    platform: "images/p29.jpg",
+    finale:   "images/p40.jpg",
+    poster:   "images/p28.jpg",
   },
   // floating tiles in "The Love Universe" (icon tiles + photo tiles)
   tiles: [
     { x: 14, y: 30, s: 130, z: 120, icon: "heart",  label: "Love" },
     { x: 30, y: 44, s: 90,  z: 40,  icon: "ring",   label: "Promise" },
-    { x: 24, y: 64, s: 80,  z: -60, photo: U("1520854221256-17451cc331bf", 300) },
+    { x: 24, y: 64, s: 80,  z: -60, photo: "images/p45.jpg" },
     { x: 8,  y: 70, s: 70,  z: -120, icon: "star",  label: "Dreams" },
     { x: 66, y: 26, s: 110, z: 80,  icon: "plane",  label: "Travel" },
-    { x: 78, y: 42, s: 95,  z: 20,  photo: U("1518199266791-5375a83190b7", 300) },
+    { x: 78, y: 42, s: 95,  z: 20,  photo: "images/p68.jpg" },
     { x: 70, y: 62, s: 90,  z: 100, icon: "camera", label: "Memories" },
     { x: 86, y: 70, s: 80,  z: -80, icon: "home",   label: "Home" },
     { x: 58, y: 74, s: 70,  z: -40, icon: "music",  label: "Our Song" },
@@ -35,12 +38,12 @@ const CONFIG = {
   ],
   // "A Journey Through Time"
   journey: [
-    { year: "2021", title: "First Hello",   text: "A crowded café, one borrowed pen — and a conversation that never ended.", img: U("1516589178581-6cd7833ae3b2", 600) },
-    { year: "2022", title: "First Date",    text: "Cold coffee, nervous laughs and a sunset walk that lasted hours.",        img: U("1474552226712-ac0f0961a954", 600) },
-    { year: "2023", title: "Adventures",    text: "Mountains, beaches, midnight road trips. Every place became ours.",        img: U("1494774157365-9e04c6720e47", 600) },
-    { year: "2024", title: "Our Home",      text: "Two toothbrushes, one tiny kitchen, endless late-night talks.",           img: U("1501901609772-df0848060b33", 600) },
-    { year: "2025", title: "She Said Yes",  text: "One knee, one ring, a thousand happy tears.",                              img: U("1529634806980-85c3dd6d34ac", 600) },
-    { year: "2026", title: "Forever",       text: "The easiest promise we will ever keep.",                                  img: U("1537633552985-df8429e8048b", 600) },
+    { year: "2021", title: "First Hello",   text: "A crowded café, one borrowed pen — and a conversation that never ended.", img: "images/p06.jpg" },
+    { year: "2022", title: "First Date",    text: "Cold coffee, nervous laughs and a sunset walk that lasted hours.",        img: "images/p10.jpg" },
+    { year: "2023", title: "Adventures",    text: "Mountains, beaches, midnight road trips. Every place became ours.",        img: "images/p37.jpg" },
+    { year: "2024", title: "Our Home",      text: "Two toothbrushes, one tiny kitchen, endless late-night talks.",           img: "images/p15.jpg" },
+    { year: "2025", title: "She Said Yes",  text: "One knee, one ring, a thousand happy tears.",                              img: "images/p39.jpg" },
+    { year: "2026", title: "Forever",       text: "The easiest promise we will ever keep.",                                  img: "images/p04.jpg" },
   ],
   // curved 3D wall in "Moments"
   since: "2021-02-14T00:00:00", // the day your love story began
@@ -62,13 +65,36 @@ Whatever tomorrow brings, I want to face it with your hand in mine. Today, tomor
     "Because you're you — and that's everything.",
   ],
   moments: [
-    ["Timeless Together", "1583939003579-730e3918a45a"], ["Built On Love", "1537633552985-df8429e8048b"],
-    ["More Than A Moment", "1465495976277-4387d4b0b4c6"], ["Golden Hour", "1606216794074-735e91aa2c92"],
-    ["Our First Trip", "1520854221256-17451cc331bf"], ["Home Is You", "1501901609772-df0848060b33"],
-    ["Hand In Hand", "1474552226712-ac0f0961a954"], ["City Lights", "1523438885200-e635ba2c371e"],
-    ["Little Things", "1507504031003-b417219a0fde"], ["Heartbeats", "1518199266791-5375a83190b7"],
-    ["Sunday Mornings", "1516589178581-6cd7833ae3b2"], ["Laughing Always", "1522673607200-164d1b6ce486"],
-    ["Late Night Talks", "1529634806980-85c3dd6d34ac"], ["Wander Together", "1494774157365-9e04c6720e47"],
+    ["Timeless Together", "images/p02.jpg", "50% 35%"],
+    ["Golden Hour", "images/p03.jpg", "50% 15%"],
+    ["Built On Love", "images/p09.jpg", "50% 40%"],
+    ["Little Things", "images/p30.jpg", "50% 25%"],
+    ["More Than A Moment", "images/p13.jpg", "50% 55%"],
+    ["Home Is You", "images/p05.jpg", "50% 25%"],
+    ["Our First Trip", "images/p14.jpg", "50% 55%"],
+    ["Heartbeats", "images/p35.jpg", "50% 20%"],
+    ["Hand In Hand", "images/p16.jpg", "50% 40%"],
+    ["Sunday Mornings", "images/p38.jpg", "50% 25%"],
+    ["City Lights", "images/p27.jpg", "50% 40%"],
+    ["Laughing Always", "images/p46.jpg", "50% 25%"],
+    ["Late Night Talks", "images/p42.jpg", "50% 30%"],
+    ["Wander Together", "images/p50.jpg", "50% 20%"],
+    ["Forever Yours", "images/p31.jpg", "50% 50%"],
+    ["Pure Magic", "images/p51.jpg", "50% 38%"],
+    ["Our Sunset", "images/p36.jpg", "50% 50%"],
+    ["Sparkle", "images/p52.jpg", "50% 15%"],
+    ["Sweet Escape", "images/p32.jpg", "50% 50%"],
+    ["Her Smile", "images/p58.jpg", "50% 20%"],
+    ["Side By Side", "images/p34.jpg", "50% 40%"],
+    ["Dreamer", "images/p64.jpg", "50% 20%"],
+    ["Temple Days", "images/p47.jpg", "50% 45%"],
+    ["Grace", "images/p12.jpg", "50% 70%"],
+    ["Perfect Match", "images/p48.jpg", "50% 45%"],
+    ["Little Joys", "images/p08.jpg", "50% 20%"],
+    ["Love Wins", "images/p67.jpg", "50% 40%"],
+    ["Beautiful Soul", "images/p11.jpg", "50% 25%"],
+    ["Together Always", "images/p43.jpg", "50% 40%"],
+    ["My Everything", "images/p53.jpg", "50% 25%"],
   ],
 };
 
@@ -88,7 +114,7 @@ gsap.registerPlugin(ScrollTrigger);
 // phones: the address bar showing/hiding must not recalculate every scroll animation (causes jumps)
 ScrollTrigger.config({ ignoreMobileResize: true });
 const IS_PHONE = window.innerWidth < 700 || matchMedia("(pointer: coarse)").matches;
-const SD = Math.min(devicePixelRatio, IS_PHONE ? 1.5 : 2); // capped canvas pixel ratio
+const SD = Math.min(devicePixelRatio, IS_PHONE ? 1 : 2); // capped canvas pixel ratio
 
 /* draws a small heart centred on (x, y), s = size in px */
 function drawHeart(c, x, y, s, color) {
@@ -104,16 +130,16 @@ $("#name2").textContent = CONFIG.name2;
 // centre the couple photos via GSAP so later animations keep them centred
 gsap.set("#uniCouple, #platCouple, #finaleCouple", { xPercent: -50 });
 $("#finaleName").textContent = CONFIG.finaleWord;
-$("#heroCouple").src = CONFIG.couple.hero;
-$("#uniCouple").src = CONFIG.couple.universe;
-$("#platCouple").src = CONFIG.couple.platform;
-$("#finaleCouple").src = CONFIG.couple.finale;
-$("#posterImg").src = CONFIG.couple.poster;
+$("#heroCouple").src = MD(CONFIG.couple.hero);
+$("#uniCouple").src = MD(CONFIG.couple.universe);
+$("#platCouple").src = SM(CONFIG.couple.platform);
+$("#finaleCouple").src = MD(CONFIG.couple.finale);
+$("#posterImg").src = MD(CONFIG.couple.poster);
 if (CONFIG.cutout) $$("#uniCouple, #platCouple, #finaleCouple").forEach((i) => i.classList.add("cutout"));
 
 $("#tiles").innerHTML = CONFIG.tiles.map((t, i) => `
   <div class="tile ${t.photo ? "photo" : ""}" data-z="${t.z}" style="left:${t.x}%;top:${t.y}%;--s:${t.s}px">
-    ${t.photo ? `<img src="${t.photo}" alt="" data-full="${t.photo}">` : `${ICONS[t.icon]}<span>${t.label}</span>`}
+    ${t.photo ? `<img src="${SM(t.photo)}" alt="" loading="lazy" decoding="async" data-full="${t.photo}">` : `${ICONS[t.icon]}<span>${t.label}</span>`}
   </div>`).join("");
 
 // on phones, tiles sit in two columns at the edges so they never cover the couple or run off-screen
@@ -129,13 +155,13 @@ placeTiles(); window.addEventListener("resize", placeTiles);
 
 $("#journeyMenu").innerHTML = CONFIG.journey.map((j) => `<li>${j.year} · ${j.title}</li>`).join("");
 $("#jcards").innerHTML = CONFIG.journey.map((j) => `
-  <article class="jcard" data-full="${j.img}" data-cap="${j.year} · ${j.title}"><img src="${j.img}" alt=""><div><b>${j.year}</b><span>${j.title}</span></div></article>`).join("");
+  <article class="jcard" data-full="${j.img}" data-cap="${j.year} · ${j.title}"><img src="${SM(j.img)}" alt="" decoding="async"><div><b>${j.year}</b><span>${j.title}</span></div></article>`).join("");
 
 const MCOLS = 10;
 $("#cyl").innerHTML = [0, 1, 2].map((row) =>
   Array.from({ length: MCOLS }, (_, i) => {
-    const [cap, id] = CONFIG.moments[(i + row * 4) % CONFIG.moments.length];
-    return `<div class="mcard" data-row="${row}" data-col="${i}" data-full="${U(id, 1600)}" data-cap="${cap}"><img src="${U(id, 600)}" alt=""><p>${cap}</p></div>`;
+    const [cap, src, pos] = CONFIG.moments[(row * MCOLS + i) % CONFIG.moments.length];
+    return `<div class="mcard" data-row="${row}" data-col="${i}" data-full="${src}" data-cap="${cap}"><img src="${SM(src)}" alt="" decoding="async" style="object-position:${pos || "50% 30%"}"><p>${cap}</p></div>`;
   }).join("")).join("");
 
 $("#dots").innerHTML = "<i></i>".repeat(14);
@@ -194,7 +220,7 @@ function sizeTrail() {
 }
 sizeTrail(); window.addEventListener("resize", sizeTrail);
 
-const trailPts = [], embers = [], TAIL = 260, STRANDS = [
+const trailPts = [], embers = [], TAIL = IS_PHONE ? 110 : 260, STRANDS = [
   { off: 0, w: 1, ph: 0 }, { off: 4, w: 0.5, ph: 1.7 }, { off: -5, w: 0.4, ph: 3.1 }, { off: 8, w: 0.28, ph: 4.4 },
 ];
 let tt = 0;
@@ -212,12 +238,12 @@ function drawTrail() {
   const head = trailPos(tt);
   trailPts.unshift(head); if (trailPts.length > TAIL) trailPts.pop();
   // sparks shed from the head
-  for (let k = 0; k < 3; k++) embers.push({ x: head.x, y: head.y, vx: (Math.random() - 0.5) * 2.2, vy: (Math.random() - 0.8) * 2, life: 1, r: Math.random() * 1.6 + 0.4, z: head.z });
+  for (let k = 0; k < (IS_PHONE ? 1 : 3); k++) embers.push({ x: head.x, y: head.y, vx: (Math.random() - 0.5) * 2.2, vy: (Math.random() - 0.8) * 2, life: 1, r: Math.random() * 1.6 + 0.4, z: head.z });
 
   [cB, cF].forEach((c) => { c.globalCompositeOperation = "source-over"; c.clearRect(0, 0, TW, TH); c.globalCompositeOperation = "lighter"; c.lineCap = "round"; });
 
   // each strand is drawn in chunks of points (one path per chunk, 4 glow layers) — ~8x fewer strokes
-  const CH = 8, n = trailPts.length;
+  const CH = IS_PHONE ? 12 : 8, n = trailPts.length;
   STRANDS.slice(0, IS_PHONE ? 2 : 4).forEach((st) => {
     for (let k = 0; k < n - 1; k += CH) {
       const e = Math.min(k + CH, n - 1), mid = trailPts[(k + e) >> 1];
@@ -233,7 +259,7 @@ function drawTrail() {
         if (i === k) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       const layer = (width, color) => { ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke(); };
-      layer(40 * w, `rgba(255,40,0,${0.07 * fade})`);    // wide red haze
+      if (!IS_PHONE) layer(40 * w, `rgba(255,40,0,${0.07 * fade})`);    // wide red haze
       layer(16 * w, `rgba(255,75,10,${0.26 * fade})`);   // orange glow
       layer(6 * w, `rgba(255,120,35,${0.65 * fade})`);   // hot rim
       layer(2.2 * w, `rgba(255,205,150,${0.95 * fade})`); // warm core
@@ -261,7 +287,7 @@ ScrollTrigger.create({ trigger: "#universe", start: "top bottom", end: "bottom t
 } });
 (function trailLoop() { if (trailOn) drawTrail(); requestAnimationFrame(trailLoop); })();
 
-$$(".tile").forEach((t, i) => {
+if (!IS_PHONE) $$(".tile").forEach((t, i) => { // floating bob is desktop-only: 10 tiles animating in 3D is heavy on phones
   tileTweens[i] = gsap.to(t, { paused: !trailOn, y: "+=" + (10 + (i % 3) * 8), rotation: (i % 2 ? 4 : -4), duration: 2.4 + (i % 4) * 0.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
 });
 const uni = $("#universe");
@@ -283,7 +309,7 @@ const glow = document.createElement("canvas"); glow.width = glow.height = 64;
 { const g = glow.getContext("2d"), rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   rg.addColorStop(0, "rgba(255,200,120,1)"); rg.addColorStop(1, "rgba(255,90,20,0)"); g.fillStyle = rg; g.fillRect(0, 0, 64, 64); }
 let sparks = [];
-const MAX_SPARKS = IS_PHONE ? 60 : 100;
+const MAX_SPARKS = IS_PHONE ? 22 : 100;
 function sizeCv() { cv.width = cv.offsetWidth * SD; cv.height = cv.offsetHeight * SD; }
 sizeCv(); window.addEventListener("resize", sizeCv);
 (function loop() {
@@ -353,7 +379,7 @@ function setYear(i) {
   const tx = yearPts[i].x - PIVOT.x, ty = yearPts[i].y - PIVOT.y;
   gsap.to(hand, { a: Math.atan2(ty, tx), l: Math.hypot(tx, ty), duration: 0.7, ease: "power3.out", onUpdate: drawHand });
   const info = $("#journeyInfo");
-  info.querySelector("b").textContent = CONFIG.journey[i].year;
+  info.querySelector("b").textContent = window.innerWidth < 700 ? `${CONFIG.journey[i].year} · ${CONFIG.journey[i].title}` : CONFIG.journey[i].year;
   info.querySelector("span").textContent = CONFIG.journey[i].text;
   gsap.fromTo(info, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 });
 }
@@ -423,7 +449,7 @@ gsap.timeline({ scrollTrigger: { trigger: "#forever", start: "top top", end: "+=
 const lb = $("#lightbox");
 function openPhoto(src, cap = "", thumb) {
   // show the already-loaded thumbnail at once, then swap in the sharp large version when it arrives
-  const big = src.replace(/w=\d+/, "w=1600");
+  const big = src;
   $("#lbImg").src = thumb || big;
   if (thumb && thumb !== big) { const pre = new Image(); pre.onload = () => ($("#lbImg").src = big); pre.src = big; }
   $("#lbCap").textContent = cap;
