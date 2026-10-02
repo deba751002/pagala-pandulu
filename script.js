@@ -170,9 +170,15 @@ $("#gateTitle").innerHTML = [...$("#gateTitle").textContent].map((c) => `<span c
 /* ------------------------------ gate + music ------------------------------ */
 const audio = $("#bgm"), musicBtn = $("#musicBtn");
 audio.volume = 0;
+// songs play one after another; the Next button skips to the next one
+const SONGS = [{ name: "Khat", src: "khat.mp3" }, { name: "O Mere Saajan", src: "saajan.mp3" }];
+let song = 0;
+function loadSong(i) { song = (i + SONGS.length) % SONGS.length; audio.src = SONGS[song].src; $("#songName").textContent = SONGS[song].name; }
 function playMusic() {
   audio.play().then(() => { musicBtn.classList.add("playing"); gsap.to(audio, { volume: 0.85, duration: 1.5 }); }).catch(() => {});
 }
+$("#nextBtn").addEventListener("click", () => { loadSong(song + 1); audio.volume = 0; playMusic(); });
+audio.addEventListener("ended", () => { loadSong(song + 1); audio.volume = 0; playMusic(); });
 musicBtn.addEventListener("click", () => {
   if (audio.paused) playMusic();
   else gsap.to(audio, { volume: 0, duration: 0.5, onComplete: () => { audio.pause(); musicBtn.classList.remove("playing"); } });

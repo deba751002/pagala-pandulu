@@ -369,3 +369,7 @@ body::after {
 }
 @media (max-width: 700px) { .jcard div { display: none; } .jcard img { height: 100%; } .journey-info b { font-size: 1.7rem; } }
 @media (max-width: 700px), (pointer: coarse) { .tile { box-shadow: 0 8px 18px rgba(0,0,0,.55); } }
+
+/* song switcher above the music button */
+.next-song { position: fixed; right: 1.4rem; bottom: calc(1.4rem + 62px); z-index: 70; background: rgba(0,0,0,.55); color: var(--gold); border: 1px solid rgba(255,199,102,.35); border-radius: 999px; padding: .4rem .8rem; font: 600 .62rem var(--sans); letter-spacing: .12em; cursor: pointer; backdrop-filter: blur(6px); }
+.next-song b { font-weight: 700; margin-right: .2rem; }
