@@ -144,7 +144,7 @@ if (CONFIG.cutout) $$("#uniCouple, #platCouple, #finaleCouple").forEach((i) => i
 
 $("#tiles").innerHTML = CONFIG.tiles.map((t, i) => `
   <div class="tile ${t.photo ? "photo" : ""}" data-z="${t.z}" style="left:${t.x}%;top:${t.y}%;--s:${t.s}px">
-    ${t.photo ? `<img src="${SM(t.photo)}" alt="" loading="lazy" decoding="async" data-full="${t.photo}">` : `${ICONS[t.icon]}<span>${t.label}</span>`}
+    ${t.photo ? `<img src="${SM(t.photo)}" alt="" decoding="async" data-full="${t.photo}">` : `${ICONS[t.icon]}<span>${t.label}</span>`}
   </div>`).join("");
 
 // on phones, tiles sit in two columns at the edges so they never cover the couple or run off-screen
@@ -163,7 +163,7 @@ $("#jcards").innerHTML = CONFIG.journey.map((j) => `
   <article class="jcard" data-full="${j.img}" data-cap="${j.year} · ${j.title}"><img src="${SM(j.img)}" alt="" decoding="async"><div><b>${j.year}</b><span>${j.title}</span></div></article>`).join("");
 
 $("#familyRail").innerHTML = CONFIG.family.map(([cap, src]) => `
-  <figure class="fcard" data-full="${src}" data-cap="${cap}"><img src="${SM(src)}" alt="${cap}" loading="lazy" decoding="async"><figcaption>${cap}</figcaption></figure>`).join("");
+  <figure class="fcard" data-full="${src}" data-cap="${cap}"><img src="${SM(src)}" alt="${cap}" decoding="async"><figcaption>${cap}</figcaption></figure>`).join("");
 $("#familyRail").addEventListener("click", (e) => { const c = e.target.closest(".fcard"); if (c) openPhoto(c.dataset.full, c.dataset.cap, c.querySelector("img").src); });
 
 const MCOLS = 10;
