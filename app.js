@@ -26,40 +26,19 @@ const img = (id, size = "s") => `images/${size === "full" ? "" : size + "/"}p${S
 
 /* ---------- gate + music ---------- */
 $("#gatePhotos").innerHTML = [6, 49, 37].map((id) => `<img src="${img(id)}" alt="">`).join("");
-/* Songs follow the story: each section (by id) has its own song. Edit the numbers to change it. */
-const SONGS = [{ name: "Our song", src: "music.mp3" }, { name: "Khat", src: "khat.mp3" }, { name: "O Mere Saajan", src: "saajan.mp3" }];
-const SECTION_SONG = { top: 0, us: 0, her: 2, fam: 0, hero: 0, reasons: 1, letter: 1, finale: 2 };
+const SONGS = [{ name: "Our song", src: "music.mp3" }, { name: "Khat", src: "khat.mp3" }]; // add more songs here
 const audio = $("#bgm"), musicBtn = $("#musicBtn");
-let song = 0, wantPlay = false, fadeTimer = 0;
-function fadeTo(v, ms, done) {
-  clearInterval(fadeTimer);
-  const from = audio.volume, steps = Math.max(1, ms / 50); let k = 0;
-  fadeTimer = setInterval(() => {
-    audio.volume = Math.min(1, Math.max(0, from + (v - from) * (++k / steps)));
-    if (k >= steps) { clearInterval(fadeTimer); done && done(); }
-  }, 50);
-}
-function setLabel() { $("#songName").textContent = SONGS[song].name; }
-function playMusic() { audio.play().then(() => { musicBtn.classList.add("playing"); fadeTo(0.8, 900); }).catch(() => {}); }
-function changeSong(i) {
-  i = (i + SONGS.length) % SONGS.length;
-  if (i === song) return;
-  song = i; setLabel();
-  const swap = () => { audio.src = SONGS[song].src; if (wantPlay) { audio.volume = 0; playMusic(); } };
-  if (wantPlay && !audio.paused) fadeTo(0, 700, swap); else swap(); // crossfade only while it is playing
-}
+let song = 0;
+function loadSong(i) { song = (i + SONGS.length) % SONGS.length; audio.src = SONGS[song].src; $("#songName").textContent = SONGS[song].name; }
+function playMusic() { audio.volume = 0.8; audio.play().then(() => musicBtn.classList.add("playing")).catch(() => {}); }
 musicBtn.addEventListener("click", () => {
-  if (audio.paused) { wantPlay = true; playMusic(); }
-  else { wantPlay = false; fadeTo(0, 300, () => { audio.pause(); musicBtn.classList.remove("playing"); }); }
+  if (audio.paused) playMusic(); else { audio.pause(); musicBtn.classList.remove("playing"); }
 });
-$("#nextBtn").addEventListener("click", () => { wantPlay = true; changeSong(song + 1); if (audio.paused) playMusic(); });
-setLabel(); audio.volume = 0;
-// as you scroll, the section in the middle of the screen picks the song
-const songObs = new IntersectionObserver((es) => es.forEach((e) => {
-  if (e.isIntersecting && e.target.id in SECTION_SONG) changeSong(SECTION_SONG[e.target.id]);
-}), { rootMargin: "-48% 0px -48% 0px" });
+$("#nextBtn").addEventListener("click", () => { loadSong(song + 1); playMusic(); });
+audio.addEventListener("ended", () => { loadSong(song + 1); playMusic(); }); // plays the songs one after another
+loadSong(0);
 $("#enterBtn").addEventListener("click", () => {
-  wantPlay = true; playMusic();
+  playMusic();
   $("#gate").classList.add("out"); document.body.classList.remove("locked");
   setTimeout(() => $("#gate").remove(), 700);
 });
@@ -153,8 +132,3 @@ function burst(x, y, n = 22) {
 }
 $("#yes").addEventListener("click", (e) => { burst(e.clientX, e.clientY, 34); $("#yesMsg").hidden = false; $("#yes").textContent = "Forever ♥"; });
 document.addEventListener("pointerdown", (e) => { if (!e.target.closest("#lb, #gate, button, a")) burst(e.clientX, e.clientY, 4); });
-
-/* ---------- start the section-based songs (needs the chapters above to exist) ---------- */
-["top", "us", "her", "fam", "hero", "reasons", "letter"].forEach((id) => songObs.observe(document.getElementById(id)));
-// the finale is the last, short section: the page ends before it reaches the middle, so it triggers when it enters the lower part of the screen
-new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && changeSong(SECTION_SONG.finale)), { rootMargin: "-80% 0px 0px 0px" }).observe($("#finale"));
