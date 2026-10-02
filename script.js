@@ -45,6 +45,11 @@ const CONFIG = {
     { year: "2025", title: "She Said Yes",  text: "One knee, one ring, a thousand happy tears.",                              img: "images/p39.jpg" },
     { year: "2026", title: "Forever",       text: "The easiest promise we will ever keep.",                                  img: "images/p04.jpg" },
   ],
+  // "Our dear family" strip
+  family: [
+    ["Family ♥", "images/p54.jpg"], ["Family ♥", "images/p55.jpg"], ["Family ♥", "images/p56.jpg"], ["Family ♥", "images/p57.jpg"],
+    ["A beautiful memory", "images/p60.jpg"], ["A beautiful memory", "images/p61.jpg"], ["A beautiful memory", "images/p62.jpg"],
+  ],
   // curved 3D wall in "Moments"
   since: "2021-02-14T00:00:00", // the day your love story began
   letterTo: "My dearest Pandulu,",
@@ -157,6 +162,10 @@ $("#journeyMenu").innerHTML = CONFIG.journey.map((j) => `<li>${j.year} · ${j.ti
 $("#jcards").innerHTML = CONFIG.journey.map((j) => `
   <article class="jcard" data-full="${j.img}" data-cap="${j.year} · ${j.title}"><img src="${SM(j.img)}" alt="" decoding="async"><div><b>${j.year}</b><span>${j.title}</span></div></article>`).join("");
 
+$("#familyRail").innerHTML = CONFIG.family.map(([cap, src]) => `
+  <figure class="fcard" data-full="${src}" data-cap="${cap}"><img src="${SM(src)}" alt="${cap}" loading="lazy" decoding="async"><figcaption>${cap}</figcaption></figure>`).join("");
+$("#familyRail").addEventListener("click", (e) => { const c = e.target.closest(".fcard"); if (c) openPhoto(c.dataset.full, c.dataset.cap, c.querySelector("img").src); });
+
 const MCOLS = 10;
 $("#cyl").innerHTML = [0, 1, 2].map((row) =>
   Array.from({ length: MCOLS }, (_, i) => {
@@ -164,7 +173,7 @@ $("#cyl").innerHTML = [0, 1, 2].map((row) =>
     return `<div class="mcard" data-row="${row}" data-col="${i}" data-full="${src}" data-cap="${cap}"><img src="${SM(src)}" alt="" decoding="async" style="object-position:${pos || "50% 30%"}"><p>${cap}</p></div>`;
   }).join("")).join("");
 
-$("#dots").innerHTML = "<i></i>".repeat(14);
+$("#dots").innerHTML = "<i></i>".repeat(16);
 $("#gateTitle").innerHTML = [...$("#gateTitle").textContent].map((c) => `<span class="c">${c === " " ? "&nbsp;" : c}</span>`).join("");
 
 /* ------------------------------ gate + music ------------------------------ */
@@ -614,8 +623,8 @@ document.addEventListener("pointerdown", (e) => {
 });
 
 /* ------------------------------ side nav / dots ------------------------------ */
-const secs = ["#hero", "#universe", "#journey", "#moments", "#reasons", "#letter", "#forever", "#together", "#promise"];
-const navIndex = [0, 1, 2, 3, 4, 5, 6, 4, 6]; // together → Reasons, promise → Forever
+const secs = ["#hero", "#universe", "#journey", "#moments", "#family", "#reasons", "#letter", "#forever", "#together", "#promise"];
+const navIndex = [0, 1, 2, 3, 4, 5, 6, 7, 5, 7]; // together → Reasons, promise → Forever
 secs.forEach((s, j, _, i = navIndex[j]) => ScrollTrigger.create({
   trigger: s, start: "top center", end: "bottom center",
   onToggle: (st) => {
