@@ -123,3 +123,9 @@ button { font: inherit; cursor: pointer; border: 0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .ph { opacity: 1; transform: none; } }
 .chapter { scroll-margin-top: 54px; }
 .grid.few { column-count: 2; max-width: 520px; margin: 0 auto; }
+
+/* song switcher sits above the music button */
+.player { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 60; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.player .music { position: static; }
+.next-song { background: rgba(255,255,255,.9); color: var(--rose-d); border-radius: 999px; padding: .4rem .8rem; font-size: .72rem; font-weight: 600; box-shadow: 0 6px 16px rgba(232,71,107,.25); }
+.next-song b { font-weight: 700; margin-right: .2rem; }

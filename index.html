@@ -22,7 +22,10 @@
   </div>
 </div>
 
-<button id="musicBtn" class="music" type="button" aria-label="Music on/off"><span></span><span></span><span></span></button>
+<div class="player">
+  <button id="nextBtn" class="next-song" type="button" aria-label="Next song"><b id="songName">Our song</b> ⏭</button>
+  <button id="musicBtn" class="music" type="button" aria-label="Music on/off"><span></span><span></span><span></span></button>
+</div>
 <audio id="bgm" src="music.mp3" loop preload="none"></audio>
 
 <!-- hero -->
@@ -48,13 +51,13 @@
 <main id="gallery"></main>
 
 <!-- reasons -->
-<section class="reasons">
+<section class="reasons" id="reasons">
   <h2 class="script">Why I love you</h2>
   <div class="rail" id="rail"></div>
 </section>
 
 <!-- letter -->
-<section class="letter">
+<section class="letter" id="letter">
   <article class="paper" id="paper">
     <p class="script to" id="letterTo"></p>
     <div id="letterBody"></div>
@@ -63,7 +66,7 @@
 </section>
 
 <!-- finale -->
-<section class="finale">
+<section class="finale" id="finale">
   <p class="kicker">one last thing</p>
   <h2 class="script">Will you stay with me, forever?</h2>
   <button id="yes" type="button" class="yes">Always ♥</button>
