@@ -51,7 +51,7 @@ const CONFIG = {
     ["A beautiful memory", "images/p60.jpg"], ["A beautiful memory", "images/p61.jpg"], ["A beautiful memory", "images/p62.jpg"],
   ],
   // curved 3D wall in "Moments"
-  since: "2021-02-14T00:00:00", // the day your love story began
+  since: "2021-10-23T00:00:00", // the day your love story began
   letterTo: "My dearest Pandulu,",
   letterFrom: "Pagala",
   letter: `From the moment you walked into my life, everything changed. The days got brighter, the nights felt softer, and even the silliest moments became memories I never want to forget.

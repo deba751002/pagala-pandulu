@@ -1,6 +1,6 @@
 /* ===== EDIT HERE: text, dates and chapter names ===== */
 const CONFIG = {
-  since: "2021-02-14T00:00:00",
+  since: "2021-10-23T00:00:00",
   letterTo: "My dearest Pandulu,",
   letterFrom: "Pagala",
   letter: [
