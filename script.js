@@ -38,7 +38,7 @@ const CONFIG = {
   ],
   // "A Journey Through Time"
   journey: [
-    { year: "2021", title: "First Hello",   text: "A crowded café, one borrowed pen — and a conversation that never ended.", img: "images/p06.jpg" },
+    { year: "2021", title: "First Hello",   text: "A crowded café, one borrowed pen — and a conversation that never ended.", img: "images/p36.jpg" },
     { year: "2022", title: "First Date",    text: "Cold coffee, nervous laughs and a sunset walk that lasted hours.",        img: "images/p10.jpg" },
     { year: "2023", title: "Adventures",    text: "Mountains, beaches, midnight road trips. Every place became ours.",        img: "images/p37.jpg" },
     { year: "2024", title: "Our Home",      text: "Two toothbrushes, one tiny kitchen, endless late-night talks.",           img: "images/p15.jpg" },

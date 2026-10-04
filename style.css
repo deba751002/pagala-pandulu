@@ -393,3 +393,6 @@ body::after {
 .next-song small b { color: var(--gold); }
 .next-song span { font-size: .72rem; color: var(--gold); }
 .next-song:active { transform: scale(.96); }
+
+/* song button sits beside the music button so it never covers the captions */
+.next-song { right: calc(1.4rem + 62px); bottom: 1.4rem; }
